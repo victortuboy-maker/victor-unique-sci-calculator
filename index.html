@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Victor Tuboy I — Real-Time Deduction & Budget Tracker</title>
+  <meta name="description" content="A premium, real-time expense deduction tracker and budget manager with instant projections, visual charts, and state persistence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="brand-info">
+          <h1>Victor Tuboy I</h1>
+          <span>Smart Finance Suite</span>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <a href="#dashboard" class="nav-item active" id="nav-dash">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Dashboard
+        </a>
+        <a href="#transactions" class="nav-item" id="nav-tx">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Transactions
+        </a>
+        <a href="#simulator" class="nav-item" id="nav-sim">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Deduction Simulator
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="quick-stats">
+          <div class="stat-label">Budget Efficiency</div>
+          <div class="stat-progress-bar">
+            <div class="stat-progress-fill" id="efficiency-fill" style="width: 100%;"></div>
+          </div>
+          <div class="stat-value" id="efficiency-value">100% Left</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top header banner -->
+      <header class="app-header">
+        <div class="header-welcome">
+          <h2>Welcome back, Guest</h2>
+          <p>Real-time overview of your personal economy</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="btn-export">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Export
+          </button>
+          <button class="btn btn-secondary" id="btn-import">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+          <button class="btn btn-primary" id="btn-add-tx-trigger">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Transaction
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <section id="dashboard-view" class="view-section active">
+        <!-- 4-Card Overview Metrics Grid -->
+        <div class="metrics-grid">
+          <!-- Monthly Budget Card -->
+          <div class="metric-card glow-blue">
+            <div class="card-icon blue">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-title">Allocated Budget</span>
+              <div class="metric-value-container">
+                <span class="metric-value" id="val-budget">$0.00</span>
+                <button class="edit-btn" id="btn-edit-budget" title="Edit Budget Limit">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="16 3 21 8 8 21 3 21 3 16 16 3"/></svg>
+                </button>
+              </div>
+              <span class="metric-sub" id="sub-budget">Limit for expenses</span>
+            </div>
+          </div>
+
+          <!-- Total Income Card -->
+          <div class="metric-card glow-green">
+            <div class="card-icon green">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-title">Total Income</span>
+              <span class="metric-value" id="val-income">$0.00</span>
+              <span class="metric-sub" id="sub-income">0 transactions</span>
+            </div>
+          </div>
+
+          <!-- Total Expenses Card -->
+          <div class="metric-card glow-red">
+            <div class="card-icon red">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-title">Total Expenses</span>
+              <span class="metric-value" id="val-expenses">$0.00</span>
+              <span class="metric-sub" id="sub-expenses">0 transactions</span>
+            </div>
+          </div>
+
+          <!-- Net Balance Card -->
+          <div class="metric-card glow-gold" id="balance-card">
+            <div class="card-icon gold" id="balance-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="metric-info">
+              <span class="metric-title">Net Balance</span>
+              <span class="metric-value" id="val-balance">$0.00</span>
+              <span class="metric-sub" id="sub-balance">Net savings rate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Double Column Area: Charts & Simulator -->
+        <div class="dashboard-row">
+          <!-- Real-Time Expense Deduction Simulator Panel -->
+          <div class="dashboard-panel flex-column glow-inset-panel">
+            <div class="panel-header">
+              <div class="panel-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <h3>Real-Time Expense Deduction Simulator</h3>
+            </div>
+            <div class="simulator-body">
+              <p class="simulator-desc">Drag the slider to simulate a large expense purchase and see the real-time impact on your remaining balance, categories, and budget limits.</p>
+              
+              <div class="input-group">
+                <label for="sim-category">Simulated Category</label>
+                <select id="sim-category" class="form-control">
+                  <option value="Food">🍔 Food & Dining</option>
+                  <option value="Rent">🏠 Rent & Lodging</option>
+                  <option value="Utilities">⚡ Utilities & Bills</option>
+                  <option value="Entertainment">🎬 Entertainment</option>
+                  <option value="Transportation">🚗 Transportation</option>
+                  <option value="Shopping">🛍️ Shopping</option>
+                  <option value="Others" selected>🏷️ Others</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <div class="label-with-val">
+                  <label for="sim-amount-slider">Simulated Deduction Amount</label>
+                  <span class="slider-display-val" id="sim-slider-val">$0</span>
+                </div>
+                <input type="range" id="sim-amount-slider" class="range-slider" min="0" max="5000" step="10" value="0">
+                <div class="slider-limits">
+                  <span>$0</span>
+                  <span id="sim-max-limit">$5,000</span>
+                </div>
+              </div>
+
+              <!-- Deduction feedback alerts -->
+              <div class="sim-feedback-box" id="sim-feedback">
+                <div class="feedback-status status-safe">
+                  <span class="status-indicator"></span>
+                  <span class="status-text">Simulator Idle — Deduct $0.00</span>
+                </div>
+                <div class="sim-details">
+                  <div class="sim-row">
+                    <span>Current Net Balance:</span>
+                    <span id="sim-current-bal" class="value">$0.00</span>
+                  </div>
+                  <div class="sim-row highlighted">
+                    <span>Projected Balance:</span>
+                    <span id="sim-projected-bal" class="value">$0.00</span>
+                  </div>
+                  <div class="sim-row">
+                    <span>Budget Consumption:</span>
+                    <span id="sim-budget-pct" class="value">0%</span>
+                  </div>
+                </div>
+                
+                <!-- Simulated progress visual bar -->
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" id="sim-progress-bar" style="width: 0%;"></div>
+                </div>
+                <div class="sim-gauge-label" id="sim-gauge-label">Safe Margin</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SVG Donut Chart (Dynamic Expense Breakdown) -->
+          <div class="dashboard-panel flex-column">
+            <div class="panel-header">
+              <div class="panel-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v10l8 4"/></svg>
+              </div>
+              <h3>Expenses by Category</h3>
+            </div>
+            <div class="chart-container">
+              <div class="donut-chart-wrapper">
+                <svg class="donut-chart" viewBox="0 0 100 100" id="svg-donut">
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--bg-card)" stroke-width="12"></circle>
+                  <!-- Dynamically populated categories arcs go here -->
+                </svg>
+                <div class="donut-center-text">
+                  <span id="donut-total">$0.00</span>
+                  <small>Total Spent</small>
+                </div>
+              </div>
+              <div class="chart-legend" id="donut-legend">
+                <!-- Legend items dynamically loaded -->
+                <div class="no-data-msg">No expenses recorded yet. Add one to see details!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend Line/Area Chart Full-Width Row -->
+        <div class="dashboard-row full-width">
+          <div class="dashboard-panel flex-column">
+            <div class="panel-header">
+              <div class="panel-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              </div>
+              <h3>Balance Trend Over Time</h3>
+            </div>
+            <div class="trend-chart-wrapper">
+              <svg class="trend-chart" viewBox="0 0 600 200" preserveAspectRatio="none" id="svg-trend">
+                <!-- Grid lines and paths dynamically generated -->
+                <path d="" fill="none" stroke="var(--color-indigo)" stroke-width="2" id="trend-line"></path>
+                <path d="" fill="url(#trend-gradient)" id="trend-area"></path>
+                
+                <defs>
+                  <linearGradient id="trend-gradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--color-indigo)" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="var(--color-indigo)" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <!-- Chart axes labels dynamically created -->
+              <div class="trend-axes" id="trend-axes"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions View -->
+      <section id="transactions-view" class="view-section">
+        <div class="dashboard-panel flex-column">
+          <div class="panel-header space-between">
+            <div class="flex-align-center gap-10">
+              <div class="panel-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <h3>Transaction Registry</h3>
+            </div>
+            <div class="filter-bar">
+              <div class="search-input-wrapper">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="tx-search" placeholder="Search transactions..." class="search-input">
+              </div>
+              <select id="filter-type" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="income">Income Only</option>
+                <option value="expense">Expenses Only</option>
+              </select>
+              <select id="filter-category" class="filter-select">
+                <option value="all">All Categories</option>
+                <option value="Salary">Salary</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Food">Food</option>
+                <option value="Rent">Rent</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th class="sortable" id="th-date">Date <span class="arrow">↓</span></th>
+                  <th class="sortable" id="th-desc">Description</th>
+                  <th class="sortable" id="th-category">Category</th>
+                  <th class="sortable" id="th-type">Type</th>
+                  <th class="sortable amount-col" id="th-amount">Amount</th>
+                  <th class="action-col">Action</th>
+                </tr>
+              </thead>
+              <tbody id="tx-table-body">
+                <!-- Dynamically filled with transactions -->
+              </tbody>
+            </table>
+            <div class="empty-state" id="table-empty-state">
+              <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <p>No transactions match your search filters.</p>
+            </div>
+          </div>
+          <div class="table-footer">
+            <span id="tx-count-label">Showing 0 transactions</span>
+            <div class="pagination" id="tx-pagination">
+              <!-- Pagination controls dynamically generated if needed -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Budget Editing Modal/Dialog -->
+  <dialog id="budget-dialog" class="glass-dialog">
+    <div class="dialog-header">
+      <h3>Adjust Monthly Budget</h3>
+      <button class="close-btn" id="btn-close-budget">&times;</button>
+    </div>
+    <form method="dialog" id="budget-form" class="dialog-form">
+      <div class="input-group">
+        <label for="budget-input">Set Maximum Expense Budget ($)</label>
+        <input type="number" id="budget-input" class="form-control" min="0" step="10" placeholder="e.g. 2500" required>
+        <small class="form-help">This limit determines when over-consumption warnings are triggered.</small>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-budget">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Transaction Add Modal/Dialog -->
+  <dialog id="tx-dialog" class="glass-dialog">
+    <div class="dialog-header">
+      <h3 id="tx-dialog-title">New Transaction</h3>
+      <button class="close-btn" id="btn-close-tx">&times;</button>
+    </div>
+    <form method="dialog" id="tx-form" class="dialog-form">
+      <div class="input-group-row">
+        <div class="input-group flex-1">
+          <label>Transaction Type</label>
+          <div class="toggle-switch">
+            <label class="switch-option active" id="type-opt-expense">
+              <input type="radio" name="tx-type" value="expense" checked style="display:none;">
+              Expense
+            </label>
+            <label class="switch-option" id="type-opt-income">
+              <input type="radio" name="tx-type" value="income" style="display:none;">
+              Income
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="tx-desc">Description</label>
+        <input type="text" id="tx-desc" class="form-control" placeholder="e.g. Grocery shopping, Salary bonus" required max="60">
+      </div>
+
+      <div class="input-group-row">
+        <div class="input-group flex-1">
+          <label for="tx-amount">Amount ($)</label>
+          <input type="number" id="tx-amount" class="form-control" min="0.01" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="input-group flex-1">
+          <label for="tx-category">Category</label>
+          <select id="tx-category" class="form-control" required>
+            <!-- Incomes specific options -->
+            <option value="Salary" class="opt-income" style="display:none;">Salary</option>
+            <option value="Freelance" class="opt-income" style="display:none;">Freelance</option>
+            <option value="Investments" class="opt-income" style="display:none;">Investments</option>
+            <!-- Expenses specific options -->
+            <option value="Food" class="opt-expense">Food & Dining</option>
+            <option value="Rent" class="opt-expense">Rent & Lodging</option>
+            <option value="Utilities" class="opt-expense">Utilities & Bills</option>
+            <option value="Entertainment" class="opt-expense">Entertainment</option>
+            <option value="Transportation" class="opt-expense">Transportation</option>
+            <option value="Shopping" class="opt-expense">Shopping</option>
+            <option value="Others" selected>Others</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="tx-date">Transaction Date</label>
+        <input type="date" id="tx-date" class="form-control" required>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-tx">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit-tx">Add Transaction</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- JS Logic Injection -->
+  <script src="app.js"></script>
+</body>
+</html>
